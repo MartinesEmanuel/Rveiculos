@@ -1,0 +1,60 @@
+
+# Comandos do Laravel
+composer create-project laravel/laravel nome-do-projeto
+php artisan serve
+php artisan key:generate
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+php artisan make:model NomeDoModelo -m
+php artisan make:controller NomeDoController
+php artisan make:controller NomeDoController --resource
+php artisan make:migration create_nome_da_tabela_table
+php artisan migrate
+php artisan migrate:rollback
+php artisan migrate:refresh
+php artisan db:seed
+php artisan make:seeder NomeDoSeeder
+php artisan tinker
+php artisan dump-server
+php artisan route:list
+php artisan queue:work
+php artisan queue:restart
+
+# Comandos do Vue.js
+npm install -g @vue/cli
+vue create nome-do-projeto
+npm run serve
+npm install
+npm install nome-da-dependencia
+npm install nome-da-dependencia --save-dev
+npm uninstall nome-da-dependencia
+npm run build
+npm run lint
+
+# Comandos para Banco de Dados (MySQL)
+mysql -u root -p
+SHOW DATABASES;
+CREATE DATABASE nome_do_banco;
+USE nome_do_banco;
+SHOW TABLES;
+DESCRIBE nome_da_tabela;
+SELECT * FROM nome_da_tabela;
+INSERT INTO nome_da_tabela (coluna1, coluna2) VALUES ('valor1', 'valor2');
+UPDATE nome_da_tabela SET coluna='novo_valor' WHERE condicao;
+DELETE FROM nome_da_tabela WHERE condicao;
+mysqldump -u root -p nome_do_banco > backup.sql
+mysql -u root -p nome_do_banco < backup.sql
+
+# Comandos Docker (se aplicável)
+docker-compose up -d
+docker-compose down
+docker ps
+docker exec -it nome_do_container bash
+docker exec -it nome_do_container mysql -u root -p
+
+
+Bendigam o Senhor todas as suas obras
+em todos os lugares do seu domínio.
+Bendiga o Senhor a minha alma!
+- Salmo 103:22
