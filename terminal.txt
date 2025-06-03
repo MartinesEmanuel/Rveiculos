@@ -1,5 +1,8 @@
 
 # Comandos do Laravel
+
+./vendor/bin/sail é diferente de php 
+
 composer create-project laravel/laravel nome-do-projeto
 php artisan serve
 php artisan key:generate
@@ -31,6 +34,8 @@ npm install nome-da-dependencia --save-dev
 npm uninstall nome-da-dependencia
 npm run build
 npm run lint
+rm -rf node_modules/.vite
+
 
 # Comandos para Banco de Dados (MySQL)
 mysql -u root -p
@@ -52,6 +57,12 @@ docker-compose down
 docker ps
 docker exec -it nome_do_container bash
 docker exec -it nome_do_container mysql -u root -p
+
+
+
+NGROK COMANDOS
+ngrok http 5174 --host-header=rewrite
+npm run dev -- --host
 
 
 Bendigam o Senhor todas as suas obras

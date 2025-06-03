@@ -21,6 +21,7 @@
           placeholder="Buscar por nome..."
           icon="search"
           class="flex-1"
+          maxlength="50"
         />
         <!-- Filtro por gênero -->
         <BaseSelect
@@ -62,7 +63,10 @@
                 <div>{{ pessoa.nome }}</div>
               </div>
             </td>
-            <td>{{ pessoa.idade }}</td>
+            <td>
+              <!-- Calcula idade a partir da data de nascimento -->
+              {{ calcularIdade(pessoa.data_nascimento) }} anos
+            </td>
             <td>{{ pessoa.genero }}</td>
             <td>
               <div class="flex items-center gap-2">
@@ -137,13 +141,16 @@
             label="Nome"
             placeholder="Digite o nome completo"
             required
+            maxlength="50"
+            pattern="^[A-Za-zÀ-ÿ\s]+$"
           />
           <BaseInput
-            v-model="formData.idade"
-            label="Idade"
-            placeholder="Digite a idade"
-            type="number"
+            v-model="formData.data_nascimento"
+            label="Data de Nascimento"
+            placeholder="dd/mm/aaaa"
+            type="date"
             required
+            :max="hoje"
           />
           <BaseSelect
             v-model="formData.genero"
@@ -154,13 +161,19 @@
           <BaseInput
             v-model="formData.telefone"
             label="Telefone"
-            placeholder="(XX) XXXXX-XXXX"
+            placeholder="(99) 99999-9999"
+            maxlength="15"
+            required
+            pattern="^\(\d{2}\) \d{5}-\d{4}$"
+            @input="formatarTelefone"
           />
           <BaseInput
             v-model="formData.email"
             label="Email"
             placeholder="email@exemplo.com"
             type="email"
+            maxlength="60"
+            required
           />
         </div>
         <div class="modal-footer">
@@ -211,7 +224,7 @@ const ordenacaoOptions = [
 // Dados do formulário
 const formData = ref({
   nome: "",
-  idade: "",
+  data_nascimento: "",
   genero: "",
   telefone: "",
   email: "",
@@ -220,6 +233,9 @@ const formData = ref({
 // Lista de pessoas e veículos
 const pessoas = ref([]);
 const veiculos = ref([]);
+
+// Data máxima para o campo de nascimento (hoje)
+const hoje = new Date().toISOString().split("T")[0];
 
 // Quando o componente é carregado
 onMounted(async () => {
@@ -237,18 +253,62 @@ onMounted(async () => {
   });
 });
 
+// Função para calcular idade a partir da data de nascimento
+function calcularIdade(dataNascimento) {
+  if (!dataNascimento) return "";
+  const hoje = new Date();
+  const nascimento = new Date(dataNascimento);
+  let idade = hoje.getFullYear() - nascimento.getFullYear();
+  const m = hoje.getMonth() - nascimento.getMonth();
+  if (m < 0 || (m === 0 && hoje.getDate() < nascimento.getDate())) {
+    idade--;
+  }
+  return idade;
+}
+
+// Máscara e validação para telefone
+function formatarTelefone(e) {
+  let valor = e.target.value.replace(/\D/g, "");
+  if (valor.length > 11) valor = valor.slice(0, 11);
+  if (valor.length > 6) {
+    valor = valor.replace(/^(\d{2})(\d{5})(\d{0,4}).*/, "($1) $2-$3");
+  } else if (valor.length > 2) {
+    valor = valor.replace(/^(\d{2})(\d{0,5})/, "($1) $2");
+  } else {
+    valor = valor.replace(/^(\d{0,2})/, "($1");
+  }
+  e.target.value = valor.trim();
+  formData.value.telefone = valor.trim();
+}
+
 // Navegação entre páginas
 const router = useRouter();
 
 // Função para salvar uma pessoa
 const salvarPessoa = async () => {
   try {
-    console.log("Tentando salvar pessoa:", formData.value);
+    // Validação extra no front-end
+    if (!formData.value.nome || formData.value.nome.length > 50) {
+      alert("Nome obrigatório e deve ter até 50 caracteres.");
+      return;
+    }
+    if (!formData.value.data_nascimento) {
+      alert("Data de nascimento obrigatória.");
+      return;
+    }
+    if (!formData.value.telefone.match(/^\(\d{2}\) \d{5}-\d{4}$/)) {
+      alert("Telefone inválido. Use o formato (99) 99999-9999.");
+      return;
+    }
+    if (!formData.value.email || formData.value.email.length > 60) {
+      alert("Email obrigatório e deve ter até 60 caracteres.");
+      return;
+    }
     await axios.post("http://localhost/api/pessoas", formData.value);
     const res = await axios.get("http://localhost/api/pessoas");
     pessoas.value = res.data;
     showModal.value = false;
-    formData.value = { nome: "", idade: "", genero: "", telefone: "", email: "" };
+    formData.value = { nome: "", data_nascimento: "", genero: "", telefone: "", email: "" };
   } catch (e) {
     alert("Erro ao salvar proprietário!");
     console.error(e);
